@@ -1,8 +1,8 @@
-# Easy email
+# Easy Email Editor - React 19
 
 <br>
 <p align="center">
-  <a aria-label="Easy email logo" href="https://email.maocanhua.cn/?utm_source=github">
+  <a aria-label="Easy email logo" href="https://github.com/IvanHoliak/easy-email-editor-r19">
     <img src="./logo_text.svg" width="300">
   </a>
 </p>
@@ -12,7 +12,7 @@
 
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
   <a aria-label="React version" href="https://react.js">
-    <img alt="" src="https://img.shields.io/badge/React-18.2-yellow.svg">
+    <img alt="" src="https://img.shields.io/badge/React-19+-blue.svg">
   </a>
   <a aria-label="MJML" href="https://mjml.io/">
     <img src="https://img.shields.io/badge/MJML-awesome-rgb(120 33 117).svg">
@@ -24,43 +24,57 @@
 
 ---
 
-## Pro Version Announcement
+## ⚡ React 19 Support
 
-We are delighted to announce that we now have a more powerful and customizable commercial version available. If it is for internal use only, then the open-source version is sufficient. However, if your editor is a critical feature, I recommend using the commercial version.
-<a href="https://www.easyemail.pro/?utm_source=github" target="_blank">Check it out here </a>.
+This fork is fully migrated to **React 19** with full compatibility and all features working, including preview functionality.
 
-## Free email templates for MJML and HTML.
+## Original Project
 
-<a href="https://github.com/Easy-Email-Pro/email-templates" target="_blank">Check it out here </a>.
+Based on the original [Easy Email](https://github.com/zalify/easy-email) project by [@m-Ryan](https://github.com/m-Ryan).
+
+## Free email templates for MJML and HTML
+
+<a href="https://github.com/Easy-Email-Pro/email-templates" target="_blank">Check it out here</a>.
 
 ## Introduction
 
-Easy email is developed based on the [MJML](https://mjml.io/) and has very good compatibility. At the same time, it can generate code through drag-and-drop editing.
+Easy Email Editor is developed based on [MJML](https://mjml.io/) and has excellent compatibility. It allows you to generate responsive email code through drag-and-drop editing.
+
+**This version includes:**
+
+- ✅ Full React 19 support
+- ✅ Updated dependencies and peer dependencies
+- ✅ All features working including preview
+- ✅ Fixed hydration issues
+- ✅ Modern React patterns (createRoot, etc.)
 
 |                  Video Overview                  |
 | :----------------------------------------------: |
 | <img src="./StandardLayout.png" alt="Overview" > |
 
-## Live Demo
-
-Open source version: <a href="https://open-source.easyemail.pro/?utm_source=github" target="_blank" alt="https://open-source.easyemail.pro/?utm_source=github">open-source.easyemail.pro</a>
-
-Commercial version: <a href="https://demo.easyemail.pro/full?utm_source=github-live" target="_blank">demo.easyemail.pro</a>.
-
 ## Getting started
 
+### Installation
+
 ```sh
-$ npm install --save easy-email-core easy-email-editor easy-email-extensions react-final-form
+npm install --save @ivanholiak/easy-email-core @ivanholiak/easy-email-editor @ivanholiak/easy-email-extensions react-final-form
 ```
+
+**Requirements:**
+
+- React 19+ (^19.0.0)
+- React DOM 19+ (^19.0.0)
+
+### Usage
 
 ```js
 import React from 'react';
-import { BlockManager, BasicType, AdvancedType } from 'easy-email-core';
-import { EmailEditor, EmailEditorProvider } from 'easy-email-editor';
-import { ExtensionProps, StandardLayout } from 'easy-email-extensions';
+import { BlockManager, BasicType, AdvancedType } from '@ivanholiak/easy-email-core';
+import { EmailEditor, EmailEditorProvider } from '@ivanholiak/easy-email-editor';
+import { ExtensionProps, StandardLayout } from '@ivanholiak/easy-email-extensions';
 
-import 'easy-email-editor/lib/style.css';
-import 'easy-email-extensions/lib/style.css';
+import '@ivanholiak/easy-email-editor/lib/style.css';
+import '@ivanholiak/easy-email-extensions/lib/style.css';
 import '@arco-themes/react-easy-email-theme/css/arco.css';
 
 const initialValues = {
@@ -112,19 +126,47 @@ export default function App() {
 ## Development
 
 ```sh
-$ git clone git@github.com:zalify/easy-email.git
-$ cd easy-email
+# Clone the repository
+git clone https://github.com/IvanHoliak/easy-email-editor-r19.git
+cd easy-email-editor-r19
 
+# Install dependencies
+pnpm install
+pnpm run install-all
 
-$ pnpm install
-$ pnpm run install-all
-$ pnpm run dev
+# Build packages
+pnpm run build
 
+# Run development server
+pnpm run dev
 ```
 
-`If you need some new features, we always welcome you to submit a PR.`
+## Migration from original Easy Email
+
+If you're migrating from the original `easy-email` packages:
+
+1. Update package names:
+
+   - `easy-email-core` → `@ivanholiak/easy-email-core`
+   - `easy-email-editor` → `@ivanholiak/easy-email-editor`
+   - `easy-email-extensions` → `@ivanholiak/easy-email-extensions`
+
+2. Update React to version 19+:
+
+   ```sh
+   npm install react@^19.0.0 react-dom@^19.0.0
+   ```
+
+3. Update your imports in your code
+
+## Contributing
+
+If you need new features or find bugs, we welcome you to submit a PR or open an issue!
 
 ## License
 
 The MIT License
 
+## Credits
+
+Original project by [@m-Ryan](https://github.com/m-Ryan) - [Easy Email](https://github.com/zalify/easy-email)

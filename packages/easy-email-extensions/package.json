@@ -1,5 +1,5 @@
 {
-  "name": "@ih/easy-email-extensions",
+  "name": "@ivanholiak/easy-email-extensions",
   "license": "MIT",
   "description": "Email editor",
   "version": "4.16.4",
@@ -95,8 +95,8 @@
     "uuid": "^9.0.1"
   },
   "peerDependencies": {
-    "@ih/easy-email-core": "^4.3.6",
-    "@ih/easy-email-editor": "^4.3.6",
+    "@ivanholiak/easy-email-core": "^4.3.6",
+    "@ivanholiak/easy-email-editor": "^4.3.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-final-form": "^6.5.7"
