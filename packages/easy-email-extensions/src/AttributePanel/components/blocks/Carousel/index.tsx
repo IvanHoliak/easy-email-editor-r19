@@ -10,10 +10,10 @@ import {
 } from '@extensions/components/Form';
 import { IconLink } from '@arco-design/web-react/icon';
 import { Collapse, Grid, Space } from '@arco-design/web-react';
-import { Stack, useEditorProps, useFocusIdx } from 'easy-email-editor';
+import { Stack, useEditorProps, useFocusIdx } from '@ivanholiak/easy-email-editor';
 import { AttributesPanelWrapper } from '@extensions/AttributePanel/components/attributes/AttributesPanelWrapper';
 import { Align } from '@extensions/AttributePanel/components/attributes/Align';
-import { ICarousel } from 'easy-email-core';
+import { ICarousel } from '@ivanholiak/easy-email-core';
 import { ClassName } from '../../attributes/ClassName';
 import { CollapseWrapper } from '../../attributes/CollapseWrapper';
 

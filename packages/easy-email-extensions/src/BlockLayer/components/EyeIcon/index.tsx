@@ -1,5 +1,5 @@
-import { IconFont } from 'easy-email-editor';
-import { BasicType } from 'easy-email-core';
+import { IconFont } from '@ivanholiak/easy-email-editor';
+import { BasicType } from '@ivanholiak/easy-email-core';
 import React from 'react';
 import { IBlockDataWithId } from '../..';
 

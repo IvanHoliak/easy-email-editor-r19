@@ -8,7 +8,7 @@ import {
   getValueByIdx,
   BlockManager,
   createBlockDataByType,
-} from 'easy-email-core';
+} from '@ivanholiak/easy-email-core';
 import { cloneDeep, debounce, get } from 'lodash';
 import { useCallback, useContext } from 'react';
 

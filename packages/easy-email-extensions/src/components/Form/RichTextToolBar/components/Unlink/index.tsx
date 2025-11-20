@@ -1,8 +1,8 @@
 import { PopoverProps, Tooltip } from '@arco-design/web-react';
 import React, { useCallback, useMemo } from 'react';
-import { IconFont } from 'easy-email-editor';
+import { IconFont } from '@ivanholiak/easy-email-editor';
 import { ToolItem } from '../ToolItem';
-import { EMAIL_BLOCK_CLASS_NAME } from 'easy-email-core';
+import { EMAIL_BLOCK_CLASS_NAME } from '@ivanholiak/easy-email-core';
 
 export interface LinkParams {
   link: string;

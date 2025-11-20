@@ -6,13 +6,13 @@ import {
   getParentByIdx,
   IBlockData,
   JsonToMjml,
-} from 'easy-email-core';
+} from '@ivanholiak/easy-email-core';
 import {
   useBlock,
   useFocusIdx,
   useEditorContext,
   useEditorProps,
-} from 'easy-email-editor';
+} from '@ivanholiak/easy-email-editor';
 import { cloneDeep } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { MjmlToJson } from '@extensions/utils/MjmlToJson';

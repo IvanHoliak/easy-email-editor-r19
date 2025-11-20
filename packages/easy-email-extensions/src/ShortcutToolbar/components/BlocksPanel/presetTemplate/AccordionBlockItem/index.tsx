@@ -1,6 +1,6 @@
 import React from 'react';
-import { AdvancedType } from 'easy-email-core';
-import { Stack } from 'easy-email-editor';
+import { AdvancedType } from '@ivanholiak/easy-email-core';
+import { Stack } from '@ivanholiak/easy-email-editor';
 import { BlockMaskWrapper } from '@extensions/ShortcutToolbar/components/BlockMaskWrapper';
 import { getImg } from '@extensions/ShortcutToolbar/utils/getImg';
 import { Picture } from '@extensions/ShortcutToolbar/components/Picture';

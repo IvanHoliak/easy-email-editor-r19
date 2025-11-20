@@ -9,7 +9,7 @@ import {
   useFocusBlockLayout,
   MergeTagBadge,
   AvailableTools,
-} from 'easy-email-editor';
+} from '@ivanholiak/easy-email-editor';
 import { FontFamily } from '../FontFamily';
 import { MergeTags } from '../MergeTags';
 import { useSelectionRange } from '@extensions/AttributePanel/hooks/useSelectionRange';

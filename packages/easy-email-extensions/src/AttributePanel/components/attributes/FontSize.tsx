@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFocusIdx } from 'easy-email-editor';
+import { useFocusIdx } from '@ivanholiak/easy-email-editor';
 import { InputWithUnitField } from '../../../components/Form';
 import { pixelAdapter } from '../adapter';
 

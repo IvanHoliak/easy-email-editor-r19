@@ -1,5 +1,5 @@
-import { useBlock, useFocusIdx } from 'easy-email-editor';
-import { AdvancedBlock, OperatorSymbol, AdvancedType, Operator, ICondition, IConditionGroup } from 'easy-email-core';
+import { useBlock, useFocusIdx } from '@ivanholiak/easy-email-editor';
+import { AdvancedBlock, OperatorSymbol, AdvancedType, Operator, ICondition, IConditionGroup } from '@ivanholiak/easy-email-core';
 import { Collapse, Grid, Switch, Button, Space, List, Message } from '@arco-design/web-react';
 import { SelectField, TextField } from '@extensions/components/Form';
 import React, { useCallback } from 'react';
