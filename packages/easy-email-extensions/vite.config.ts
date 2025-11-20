@@ -14,10 +14,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@extensions': path.resolve('./src'),
-      'easy-email-core': path.resolve('../easy-email-core/lib'),
-      'easy-email-editor': path.resolve('../easy-email-editor/lib'),
-      '@ivanholiak/easy-email-core': path.resolve('../easy-email-core/lib'),
-      '@ivanholiak/easy-email-editor': path.resolve('../easy-email-editor/lib'),
+      'easy-email-core': path.resolve(__dirname, '../easy-email-core/lib'),
+      'easy-email-editor': path.resolve(__dirname, '../easy-email-editor/lib'),
+      '@ivanholiak/easy-email-core': path.resolve(__dirname, '../easy-email-core/lib'),
+      '@ivanholiak/easy-email-editor': path.resolve(__dirname, '../easy-email-editor/lib'),
     },
   },
   define: {},
