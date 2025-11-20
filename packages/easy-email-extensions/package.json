@@ -1,12 +1,12 @@
 {
-  "name": "easy-email-extensions",
+  "name": "@ih/easy-email-extensions",
   "license": "MIT",
   "description": "Email editor",
   "version": "4.16.4",
   "author": "m-Ryan",
   "repository": {
     "type": "git",
-    "url": "git@github.com:zalify/easy-email.git"
+    "url": "https://github.com/IvanHoliak/easy-email-editor-r19.git"
   },
   "keywords": [
     "email editor core"
@@ -95,8 +95,8 @@
     "uuid": "^9.0.1"
   },
   "peerDependencies": {
-    "easy-email-core": "^4.3.6",
-    "easy-email-editor": "^4.3.6",
+    "@ih/easy-email-core": "^4.3.6",
+    "@ih/easy-email-editor": "^4.3.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-final-form": "^6.5.7"

@@ -1,5 +1,9 @@
 {
-  "name": "easy-email",
+  "name": "ih-easy-email",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IvanHoliak/easy-email-editor-r19.git"
+  },
   "scripts": {
     "install-all": "lerna exec -- pnpm install && cd demo && pnpm install",
     "vercel-install": "lerna exec -- pnpm install && cd demo && pnpm install",

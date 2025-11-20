@@ -1,9 +1,13 @@
 {
-  "name": "easy-email-localization",
+  "name": "@ih/easy-email-localization",
   "license": "MIT",
   "description": "Email editor",
   "version": "4.16.1",
   "author": "m-Ryan",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IvanHoliak/easy-email-editor-r19.git"
+  },
   "keywords": [],
   "files": [
     "locales"
