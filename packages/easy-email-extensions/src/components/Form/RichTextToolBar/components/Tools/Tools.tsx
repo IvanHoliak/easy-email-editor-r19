@@ -195,6 +195,7 @@ export function Tools(props: ToolsProps) {
       case AvailableTools.IconFontColor:
         return [
           <IconFontColor
+            key={tool}
             selectionRange={selectionRange}
             execCommand={execCommand}
             getPopoverMountNode={getPopoverMountNode}
@@ -203,6 +204,7 @@ export function Tools(props: ToolsProps) {
       case AvailableTools.IconBgColor:
         return [
           <IconBgColor
+            key={tool}
             selectionRange={selectionRange}
             execCommand={execCommand}
             getPopoverMountNode={getPopoverMountNode}
@@ -294,13 +296,17 @@ export function Tools(props: ToolsProps) {
         }}
       >
         <BasicTools />
-        {tools.flatMap((tool, index) => [
-          tool,
-          <div
-            className='easy-email-extensions-divider'
-            key={`divider-${index}`}
-          />,
-        ])}
+        {tools.map((tool, index) => (
+          <React.Fragment key={`tool-${index}`}>
+            {tool}
+            {index < tools.length - 1 && (
+              <div
+                className='easy-email-extensions-divider'
+                key={`divider-${index}`}
+              />
+            )}
+          </React.Fragment>
+        ))}
       </div>
       {toolbar?.suffix?.(execCommand)}
     </div>

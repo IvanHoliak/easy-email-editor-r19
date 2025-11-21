@@ -38,8 +38,13 @@ export function ColorPicker(props: ColorPickerProps) {
     [addCurrentColor, onChange],
   );
 
-  const getPopupContainer = useCallback(() => {
-    return getCollapseItemEle(refEle);
+  const getPopupContainerInternal = useCallback(() => {
+    if (!refEle) return document.body;
+    const container = getCollapseItemEle(refEle);
+    if (!container || !container.offsetParent) {
+      return document.body;
+    }
+    return container;
   }, [refEle]);
 
   const inputColor = useMemo(() => {
@@ -69,10 +74,14 @@ export function ColorPicker(props: ColorPickerProps) {
             onChange={onInputChange}
           />
         )}
-        getPopupContainer={getPopupContainer}
+        getPopupContainer={props.getPopupContainer || getPopupContainerInternal}
         {...props}
       >
-        {children || (
+        {children ? (
+          <div ref={setRefEle} style={{ display: 'inline-block' }}>
+            {children}
+          </div>
+        ) : (
           <div
             ref={setRefEle}
             style={{
