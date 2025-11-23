@@ -66,10 +66,14 @@ export const SyncScrollIframeComponent = ({
       windowRef?.(contentWindow);
       const innerBody = contentWindow.document.body;
       innerBody.style.backgroundColor = 'transparent';
+      // Set document title if provided
+      if (title) {
+        contentWindow.document.title = title;
+      }
       setMountNode(innerBody);
       setContentWindow(contentWindow);
     },
-    [windowRef],
+    [windowRef, title],
   );
 
   useEffect(() => {
@@ -107,19 +111,28 @@ export const SyncScrollIframeComponent = ({
     };
   }, [contentWindow, isActive, setFirstVisibleEle]);
 
+  // Escape HTML to prevent XSS
+  const escapeHtml = (text: string): string => {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  };
+
+  const defaultTitle = title || 'Email Preview';
+  const escapedTitle = escapeHtml(defaultTitle);
+  const srcDoc = `<!doctype html> <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"> <head><title>${escapedTitle}</title></head> <body> </body> </html>`;
+
   return useMemo(() => {
     return (
       <iframe
         ref={setRef}
         title={title}
-        srcDoc={
-          '<!doctype html> <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"> <head></head> <body> </body> </html>'
-        }
+        srcDoc={srcDoc}
         style={style}
         onLoad={onLoad}
       >
         <>{mountNode && createPortal(children, mountNode)}</>
       </iframe>
     );
-  }, [title, style, onLoad, mountNode, children]);
+  }, [title, style, onLoad, mountNode, children, srcDoc]);
 };
