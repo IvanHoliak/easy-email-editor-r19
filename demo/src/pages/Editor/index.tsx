@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-wrap-multilines */
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import template from '@demo/store/template';
 import { useAppSelector } from '@demo/hooks/useAppSelector';
@@ -44,6 +44,10 @@ import enUS from '@arco-design/web-react/es/locale/en-US';
 
 import { useShowCommercialEditor } from '@demo/hooks/useShowCommercialEditor';
 import { useWindowSize } from 'react-use';
+import { MarketingCampaignsPanel, ProductShowcasePanel } from '@demo/components/CustomBlocks/DraggableCustomBlock';
+import { CustomBlocksType } from '@demo/components/CustomBlocks/constants';
+// Import custom blocks to register them in BlockManager
+import '@demo/components/CustomBlocks';
 
 const defaultCategories: ExtensionProps['categories'] = [
   {
@@ -119,6 +123,60 @@ export default function Editor() {
   const compact = width > 1600;
   const { id, userId } = useQuery();
   const loading = useLoading(template.loadings.fetchById);
+  const [campaignSearchQuery, setCampaignSearchQuery] = useState('');
+  const [productSearchQuery, setProductSearchQuery] = useState('');
+
+  // Example of custom draggable blocks in custom displayType sections
+  const customCategories: ExtensionProps['categories'] = [
+    ...defaultCategories,
+    {
+      label: 'Marketing Campaigns',
+      active: true,
+      displayType: 'custom',
+      blocks: [
+        <MarketingCampaignsPanel
+          key="marketing-campaigns-panel"
+          searchQuery={campaignSearchQuery}
+          onSearchChange={setCampaignSearchQuery}
+        />,
+      ],
+    },
+    {
+      label: 'Product Showcase',
+      active: true,
+      displayType: 'custom',
+      blocks: [
+        <ProductShowcasePanel
+          key="product-showcase-panel"
+          searchQuery={productSearchQuery}
+          onSearchChange={setProductSearchQuery}
+        />,
+        // Direct draggable product block
+        {
+          type: CustomBlocksType.PRODUCT_RECOMMENDATION,
+          payload: undefined,
+          title: 'Product Grid',
+          canDragAndDrop: true, // Explicitly enabled (defaults to true)
+          children: (
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                backgroundColor: '#e3f2fd',
+                borderRadius: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '20px',
+              }}
+            >
+              📦
+            </div>
+          ),
+        },
+      ],
+    },
+  ];
 
   useEffect(() => {
     if (id) {
@@ -264,7 +322,7 @@ export default function Editor() {
                 />
 
                 <StandardLayout
-                  categories={defaultCategories}
+                  categories={customCategories}
                   showSourceCode={true}
                   mjmlReadOnly={false}
                   showBlockLayer={false}

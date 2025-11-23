@@ -35,7 +35,16 @@ export interface ExtensionProps extends BlockLayerProps {
     | {
         label: string;
         active?: boolean;
-        blocks: Array<React.ReactNode>;
+        blocks: Array<
+          | React.ReactNode
+          | {
+              type: string;
+              payload?: any;
+              title?: string;
+              children: React.ReactNode;
+              canDragAndDrop?: boolean;
+            }
+        >;
         displayType: 'custom';
       }
   >;

@@ -123,6 +123,326 @@ export default function App() {
 
 </br>
 
+## Custom Draggable Blocks
+
+You can add custom draggable components to the editor sidebar using the `displayType: 'custom'` option in categories. This allows you to create your own draggable blocks that can be dropped into the email editor.
+
+> **Note:** The examples in the `demo/src/components/CustomBlocks` folder are just demonstration examples. You should create your own custom blocks based on your specific needs.
+
+### Basic Usage
+
+There are two ways to create draggable custom blocks:
+
+#### Method 1: Using a draggable block object
+
+```js
+import { ExtensionProps } from '@ivanholiak/easy-email-extensions';
+import { BlockAvatarWrapper } from '@ivanholiak/easy-email-editor';
+
+const categories: ExtensionProps['categories'] = [
+  {
+    label: 'Opportunities',
+    active: true,
+    displayType: 'custom',
+    blocks: [
+      {
+        type: 'your-custom-block-type',
+        payload: {
+          /* optional payload */
+        },
+        title: 'Custom Block',
+        canDragAndDrop: true, // Optional: defaults to true
+        children: (
+          <div style={{ padding: '10px', textAlign: 'center' }}>
+            <div>📦</div>
+            <div>Custom Block</div>
+          </div>
+        ),
+      },
+    ],
+  },
+];
+```
+
+#### Method 2: Using React components with BlockAvatarWrapper
+
+```js
+import { BlockAvatarWrapper } from '@ivanholiak/easy-email-editor';
+import React from 'react';
+
+function CustomDraggableBlock({ type, payload, title }) {
+  return (
+    <BlockAvatarWrapper
+      type={type}
+      payload={payload}
+    >
+      <div style={{ padding: '10px', textAlign: 'center' }}>
+        <div>📦</div>
+        <div>{title}</div>
+      </div>
+    </BlockAvatarWrapper>
+  );
+}
+
+const categories: ExtensionProps['categories'] = [
+  {
+    label: 'Marketing Campaigns',
+    active: true,
+    displayType: 'custom',
+    blocks: [
+      <CustomDraggableBlock
+        key='block-1'
+        type='your-custom-block-type'
+        payload={undefined}
+        title='Campaign Block'
+      />,
+    ],
+  },
+  {
+    label: 'Product Showcase',
+    active: true,
+    displayType: 'custom',
+    blocks: [
+      {
+        type: 'product-recommendation',
+        payload: undefined,
+        title: 'Product Grid',
+        canDragAndDrop: true, // Optional: defaults to true
+        children: (
+          <div style={{ textAlign: 'center', padding: '10px' }}>
+            <div>🛍️</div>
+            <div>Product Grid</div>
+          </div>
+        ),
+      },
+      {
+        type: 'read-only-block',
+        payload: undefined,
+        title: 'Read Only Block',
+        canDragAndDrop: false, // This block cannot be dragged
+        children: (
+          <div style={{ textAlign: 'center', padding: '10px' }}>
+            <div>🔒</div>
+            <div>Read Only</div>
+          </div>
+        ),
+      },
+    ],
+  },
+];
+```
+
+### Complete Example
+
+Here's a complete example with separate marketing campaigns and product showcase panels:
+
+```js
+import React, { useState } from 'react';
+import { BlockAvatarWrapper } from '@ivanholiak/easy-email-editor';
+import { ExtensionProps, StandardLayout } from '@ivanholiak/easy-email-extensions';
+
+function MarketingCampaignsPanel({ searchQuery, onSearchChange }) {
+  const campaigns = [
+    { id: '1', name: 'Summer Sale', type: 'campaign-block' },
+    { id: '2', name: 'New Arrivals', type: 'campaign-block' },
+    { id: '3', name: 'Limited Offer', type: 'campaign-block' },
+  ];
+
+  const filtered = campaigns.filter(
+    campaign =>
+      !searchQuery || campaign.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
+  return (
+    <div style={{ padding: '10px' }}>
+      <input
+        type='text'
+        placeholder='Search campaigns...'
+        value={searchQuery || ''}
+        onChange={e => onSearchChange?.(e.target.value)}
+        style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
+      />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {filtered.map(campaign => (
+          <div
+            key={campaign.id}
+            style={{
+              padding: '10px',
+              border: '1px solid #ddd',
+              borderRadius: '4px',
+              cursor: 'grab',
+            }}
+          >
+            <BlockAvatarWrapper
+              type={campaign.type}
+              payload={undefined}
+            >
+              <div style={{ textAlign: 'center' }}>
+                <div>🎯</div>
+                <div>{campaign.name}</div>
+              </div>
+            </BlockAvatarWrapper>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProductShowcasePanel({ searchQuery, onSearchChange }) {
+  const products = [
+    { id: '1', name: 'Featured Products', type: 'product-recommendation' },
+    { id: '2', name: 'Best Sellers', type: 'product-recommendation' },
+    { id: '3', name: 'New Releases', type: 'product-recommendation' },
+  ];
+
+  const filtered = products.filter(
+    product =>
+      !searchQuery || product.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
+  return (
+    <div style={{ padding: '10px' }}>
+      <input
+        type='text'
+        placeholder='Search products...'
+        value={searchQuery || ''}
+        onChange={e => onSearchChange?.(e.target.value)}
+        style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
+      />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {filtered.map(product => (
+          <div
+            key={product.id}
+            style={{
+              padding: '10px',
+              border: '1px solid #ddd',
+              borderRadius: '4px',
+              cursor: 'grab',
+            }}
+          >
+            <BlockAvatarWrapper
+              type={product.type}
+              payload={undefined}
+            >
+              <div style={{ textAlign: 'center' }}>
+                <div>🛍️</div>
+                <div>{product.name}</div>
+              </div>
+            </BlockAvatarWrapper>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  const [campaignSearchQuery, setCampaignSearchQuery] = useState('');
+  const [productSearchQuery, setProductSearchQuery] = useState('');
+
+  const categories: ExtensionProps['categories'] = [
+    // ... other categories
+    {
+      label: 'Marketing Campaigns',
+      active: true,
+      displayType: 'custom',
+      blocks: [
+        <MarketingCampaignsPanel
+          key='marketing-campaigns-panel'
+          searchQuery={campaignSearchQuery}
+          onSearchChange={setCampaignSearchQuery}
+        />,
+      ],
+    },
+    {
+      label: 'Product Showcase',
+      active: true,
+      displayType: 'custom',
+      blocks: [
+        <ProductShowcasePanel
+          key='product-showcase-panel'
+          searchQuery={productSearchQuery}
+          onSearchChange={setProductSearchQuery}
+        />,
+        // You can also add direct draggable block objects
+        {
+          type: 'product-recommendation',
+          payload: undefined,
+          title: 'Product Grid',
+          canDragAndDrop: true, // Optional: defaults to true
+          children: (
+            <div style={{ textAlign: 'center', padding: '10px' }}>
+              <div>📦</div>
+              <div>Product Grid</div>
+            </div>
+          ),
+        },
+      ],
+    },
+  ];
+
+  return (
+    <EmailEditorProvider data={initialValues}>
+      {({ values }) => (
+        <StandardLayout categories={categories}>
+          <EmailEditor />
+        </StandardLayout>
+      )}
+    </EmailEditorProvider>
+  );
+}
+```
+
+### Important Notes
+
+1. **Create Your Own Blocks**: The `CustomBlocks` folder in the demo is just an example. You need to create your own custom blocks based on your requirements. Each custom block should:
+
+   - Be defined using `createCustomBlock()` from `@ivanholiak/easy-email-core`
+   - Have a unique `type` identifier
+   - Define `validParentType` to specify where it can be inserted
+   - Implement `create()` method to generate default block data
+   - Optionally implement `render()` method for custom rendering
+
+2. **Block Registration**: The `type` property must match a registered block type in `BlockManager`. **You must register your custom blocks BEFORE using them in categories.** Import the registration file at the top of your component:
+
+   ```js
+   // Import custom blocks to register them
+   import './components/CustomBlocks';
+
+   // Then use them in categories
+   const categories = [
+     /* ... */
+   ];
+   ```
+
+3. **validParentType**: Custom blocks must have a `validParentType` array that specifies where they can be inserted. For example:
+
+   ```js
+   validParentType: [BasicType.PAGE, AdvancedType.WRAPPER, BasicType.WRAPPER];
+   ```
+
+4. **canDragAndDrop**: The `canDragAndDrop` property is optional and defaults to `true`. Set it to `false` to disable drag-and-drop for a specific block. When `false`, the block will be displayed with reduced opacity and a "not-allowed" cursor.
+
+   ```js
+   {
+     type: 'my-block',
+     canDragAndDrop: false, // This block cannot be dragged
+     children: <MyComponent />
+   }
+   ```
+
+5. **Payload**: The `payload` property is optional and will be passed to the block's `create` method when the block is dropped.
+
+6. **Children**: For draggable block objects, the `children` property should be a React node that will be displayed in the sidebar.
+
+7. **Mixed Usage**: You can mix React components and draggable block objects in the same custom section.
+
+8. **Drop Zones**: Drop zones will only appear if:
+   - The block is registered in `BlockManager`
+   - The block has valid `validParentType` configuration
+   - The block type matches a valid parent in the email structure
+
 ## Development
 
 ```sh
