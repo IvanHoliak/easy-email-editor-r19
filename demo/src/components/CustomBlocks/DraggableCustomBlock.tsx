@@ -57,7 +57,10 @@ export function DraggableCustomBlock({
       }}
     >
       {canDragAndDrop ? (
-        <BlockAvatarWrapper type={type} payload={payload}>
+        <BlockAvatarWrapper
+          type={type}
+          payload={payload}
+        >
           {blockContent}
         </BlockAvatarWrapper>
       ) : (
@@ -85,15 +88,15 @@ export function MarketingCampaignsPanel({
 
   const filteredCampaigns = campaigns.filter(
     campaign =>
-      !searchQuery || campaign.name.toLowerCase().includes(searchQuery.toLowerCase())
+      !searchQuery || campaign.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
     <div style={{ padding: '10px' }}>
       <div style={{ marginBottom: '10px' }}>
         <input
-          type="text"
-          placeholder="Search campaigns..."
+          type='text'
+          placeholder='Search campaigns...'
           value={searchQuery || ''}
           onChange={e => onSearchChange?.(e.target.value)}
           style={{
@@ -151,15 +154,15 @@ export function ProductShowcasePanel({
 
   const filteredProducts = products.filter(
     product =>
-      !searchQuery || product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      !searchQuery || product.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
     <div style={{ padding: '10px' }}>
       <div style={{ marginBottom: '10px' }}>
         <input
-          type="text"
-          placeholder="Search products..."
+          type='text'
+          placeholder='Search products...'
           value={searchQuery || ''}
           onChange={e => onSearchChange?.(e.target.value)}
           style={{
@@ -198,4 +201,3 @@ export function ProductShowcasePanel({
     </div>
   );
 }
-

@@ -31,7 +31,17 @@ export type ICampaignBlock = IBlockData<
 export const CampaignBlock = createCustomBlock<ICampaignBlock>({
   name: 'Campaign Block',
   type: CustomBlocksType.CAMPAIGN_BLOCK,
-  validParentType: [BasicType.PAGE, AdvancedType.WRAPPER, BasicType.WRAPPER],
+  validParentType: [
+    BasicType.PAGE,
+    AdvancedType.WRAPPER,
+    BasicType.WRAPPER,
+    BasicType.COLUMN,
+    AdvancedType.COLUMN,
+    BasicType.TEXT,
+    AdvancedType.TEXT,
+    BasicType.SECTION,
+    AdvancedType.SECTION,
+  ],
   create: payload => {
     const defaultData: ICampaignBlock = {
       type: CustomBlocksType.CAMPAIGN_BLOCK,
@@ -51,11 +61,29 @@ export const CampaignBlock = createCustomBlock<ICampaignBlock>({
       },
       children: [],
     };
-    return mergeBlock(defaultData, payload);
+    const merged = mergeBlock(defaultData, payload);
+    // Ensure all required fields exist
+    if (!merged.data?.value) {
+      merged.data = merged.data || {};
+      merged.data.value = merged.data.value || defaultData.data.value;
+    }
+    if (!merged.attributes) {
+      merged.attributes = defaultData.attributes;
+    }
+    if (!Array.isArray(merged.children)) {
+      merged.children = [];
+    }
+    return merged;
   },
   render: ({ data, idx, mode }) => {
-    const { title, description, buttonText, buttonUrl } = data.data.value;
-    const attributes = data.attributes;
+    // Safe data access with fallbacks
+    const value = data?.data?.value || {};
+    const attributes = data?.attributes || {};
+
+    const title = value.title || 'Campaign Title';
+    const description = value.description || 'Campaign description goes here';
+    const buttonText = value.buttonText || 'Learn More';
+    const buttonUrl = value.buttonUrl || 'https://example.com';
 
     return (
       <Wrapper
@@ -112,4 +140,3 @@ export const CampaignBlock = createCustomBlock<ICampaignBlock>({
 });
 
 export { Panel } from './Panel';
-

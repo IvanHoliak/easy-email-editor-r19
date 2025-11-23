@@ -432,16 +432,64 @@ export default function App() {
    }
    ```
 
-5. **Payload**: The `payload` property is optional and will be passed to the block's `create` method when the block is dropped.
+5. **Payload**: The `payload` property is optional and will be passed to the block's `create` method when the block is dropped. You can use this to pass initial data to your custom block.
 
-6. **Children**: For draggable block objects, the `children` property should be a React node that will be displayed in the sidebar.
+6. **Safe Data Access**: Always use safe data access in your `render` method to prevent errors when data is incomplete:
 
-7. **Mixed Usage**: You can mix React components and draggable block objects in the same custom section.
+   ```js
+   render: ({ data, idx, mode }) => {
+     // Safe data access with fallbacks
+     const value = data?.data?.value || {};
+     const attributes = data?.attributes || {};
 
-8. **Drop Zones**: Drop zones will only appear if:
-   - The block is registered in `BlockManager`
-   - The block has valid `validParentType` configuration
-   - The block type matches a valid parent in the email structure
+     const title = value.title || 'Default Title';
+     const description = value.description || 'Default Description';
+
+     // Your render logic here
+   };
+   ```
+
+7. **Ensure Data Structure in create()**: Always ensure your `create` method returns a complete data structure:
+
+   ```js
+   create: payload => {
+     const defaultData = {
+       type: 'my-block',
+       data: {
+         value: {
+           // your default values
+         },
+       },
+       attributes: {
+         // your default attributes
+       },
+       children: [],
+     };
+     const merged = mergeBlock(defaultData, payload);
+     // Ensure all required fields exist
+     if (!merged.data?.value) {
+       merged.data = merged.data || {};
+       merged.data.value = merged.data.value || defaultData.data.value;
+     }
+     if (!merged.attributes) {
+       merged.attributes = defaultData.attributes;
+     }
+     if (!Array.isArray(merged.children)) {
+       merged.children = [];
+     }
+     return merged;
+   };
+   ```
+
+8. **Children**: For draggable block objects, the `children` property should be a React node that will be displayed in the sidebar.
+
+9. **Mixed Usage**: You can mix React components and draggable block objects in the same custom section.
+
+10. **Drop Zones**: Drop zones will only appear if:
+
+- The block is registered in `BlockManager`
+- The block has valid `validParentType` configuration
+- The block type matches a valid parent in the email structure
 
 ## Development
 

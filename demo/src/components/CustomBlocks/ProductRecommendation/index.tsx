@@ -39,7 +39,17 @@ const productPlaceholder = {
 export const ProductRecommendation = createCustomBlock<IProductRecommendation>({
   name: 'Product recommendation',
   type: CustomBlocksType.PRODUCT_RECOMMENDATION,
-  validParentType: [BasicType.PAGE, AdvancedType.WRAPPER, BasicType.WRAPPER],
+  validParentType: [
+    BasicType.PAGE,
+    AdvancedType.WRAPPER,
+    BasicType.WRAPPER,
+    BasicType.COLUMN,
+    AdvancedType.COLUMN,
+    BasicType.TEXT,
+    AdvancedType.TEXT,
+    BasicType.SECTION,
+    AdvancedType.SECTION,
+  ],
   create: payload => {
     const defaultData: IProductRecommendation = {
       type: CustomBlocksType.PRODUCT_RECOMMENDATION,
@@ -71,11 +81,28 @@ export const ProductRecommendation = createCustomBlock<IProductRecommendation>({
         },
       ],
     };
-    return mergeBlock(defaultData, payload);
+    const merged = mergeBlock(defaultData, payload);
+    // Ensure all required fields exist
+    if (!merged.data?.value) {
+      merged.data = merged.data || {};
+      merged.data.value = merged.data.value || defaultData.data.value;
+    }
+    if (!merged.attributes) {
+      merged.attributes = defaultData.attributes;
+    }
+    if (!Array.isArray(merged.children)) {
+      merged.children = defaultData.children;
+    }
+    return merged;
   },
   render: ({ data, idx, mode, context, dataSource }) => {
-    const { title, buttonText, quantity } = data.data.value;
-    const attributes = data.attributes;
+    // Safe data access with fallbacks
+    const value = data?.data?.value || {};
+    const attributes = data?.attributes || {};
+
+    const title = value.title || 'You might also like';
+    const buttonText = value.buttonText || 'Buy now';
+    const quantity = value.quantity || 3;
 
     const productList =
       mode === 'testing'
