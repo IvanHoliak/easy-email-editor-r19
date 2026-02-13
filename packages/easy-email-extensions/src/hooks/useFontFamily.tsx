@@ -1,5 +1,6 @@
 import { useEditorContext, useEditorProps } from '@ivanholiak/easy-email-editor';
 import React, { useMemo } from 'react';
+import { GOOGLE_FONTS } from '@extensions/constants/googleFonts';
 
 export function useFontFamily() {
   const { fontList: defaultFontList } = useEditorProps();
@@ -12,12 +13,31 @@ export function useFontFamily() {
       value: string;
       label: React.ReactNode;
     }> = [];
-    if (defaultFontList) {
-      fonts.push(...defaultFontList);
-    }
+    const seen = new Set<string>();
+
     if (addFonts) {
-      const options = addFonts.map(item => ({ value: item.name, label: item.name }));
-      fonts.unshift(...options);
+      for (const item of addFonts) {
+        if (!seen.has(item.name)) {
+          seen.add(item.name);
+          fonts.push({ value: item.name, label: item.name });
+        }
+      }
+    }
+
+    if (defaultFontList) {
+      for (const item of defaultFontList) {
+        if (!seen.has(item.value)) {
+          seen.add(item.value);
+          fonts.push({ value: item.value, label: item.label });
+        }
+      }
+    }
+
+    for (const font of GOOGLE_FONTS) {
+      if (!seen.has(font)) {
+        seen.add(font);
+        fonts.push({ value: font, label: font });
+      }
     }
 
     return fonts.map(item => ({ value: item.value, label: <span style={{ fontFamily: item.value }}>{item.label}</span> }));
