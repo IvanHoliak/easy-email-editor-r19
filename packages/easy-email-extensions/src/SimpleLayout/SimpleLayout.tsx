@@ -24,7 +24,7 @@ export const SimpleLayout: React.FC<
   const { showSourceCode = true, defaultShowLayer = true, jsonReadOnly = false, mjmlReadOnly = true } = props;
   const [collapsed, setCollapsed] = useState(!defaultShowLayer);
   return (
-    <ConfigProvider locale={enUS}>
+    <ConfigProvider locale={enUS} prefixCls="ee">
       <Layout
         className={styles.SimpleLayout}
         style={{

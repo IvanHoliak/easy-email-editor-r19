@@ -12,6 +12,7 @@ import { AccordionBlockItem } from './AccordionBlockItem';
 import { CarouselBlockItem } from './CarouselBlockItem';
 import { NavbarBlockItem } from './NavbarBlockItem';
 import { SocialBlockItem } from './SocialBlockItem';
+import { CodeBlockItem } from './CodeBlockItem';
 import { WrapperBlockItem } from './WrapperBlockItem';
 import { SectionBlockItem } from './SectionBlockItem';
 import { GroupBlockItem } from './GroupBlockItem';
@@ -146,6 +147,16 @@ export const defaultCategories = [
           );
         },
         component: SocialBlockItem,
+      },
+      {
+        type: AdvancedType.CODE,
+        get title() {
+          return t('Code');
+        },
+        get description() {
+          return t('Displays a formatted code snippet in your email.');
+        },
+        component: CodeBlockItem,
       },
     ],
   },

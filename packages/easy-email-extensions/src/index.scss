@@ -1,8 +1,50 @@
-[arco-theme="dark"] {
+// Base styles for ee-prefixed Arco Select to ensure correct layout
+// when host project imports Arco CSS without transformArcoCSS
+.ee-select-view {
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  outline: none;
+  user-select: none;
+  text-align: left;
+  flex-wrap: nowrap;
+}
+
+.ee-select-view-value {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.ee-select-view-suffix {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.ee-select-view-input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+[ee-theme="dark"] {
   .easy-email-editor-tabWrapper {
     background-color: var(--color-bg-3);
   }
-  .arco-layout {
+  .ee-layout {
     background-color: var(--color-bg-3);
   }
   .easy-email-editor-button {

@@ -109,7 +109,7 @@ export const StandardLayout: React.FC<ExtensionProps> = props => {
       {...props}
       categories={categories}
     >
-      <ConfigProvider locale={enUS}>
+      <ConfigProvider locale={enUS} prefixCls="ee">
         <Card
           style={{ padding: 0 }}
           bodyStyle={{

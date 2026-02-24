@@ -64,19 +64,19 @@
       align-items: center;
       flex-shrink: 0;
 
-      .arco-input-inner-wrapper {
+      .ee-input-inner-wrapper {
         box-shadow: none;
       }
-      .arco-btn-size-default {
+      .ee-btn-size-default {
         padding: 0 12px;
       }
 
-      .arco-input-group {
+      .ee-input-group {
         display: flex;
-        .arco-input-inner-wrapper {
+        .ee-input-inner-wrapper {
           flex: 1;
         }
-        .arco-input-group-addafter {
+        .ee-input-group-addafter {
           height: 100%;
           width: auto;
         }

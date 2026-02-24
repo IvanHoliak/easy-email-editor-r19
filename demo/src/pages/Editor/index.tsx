@@ -25,6 +25,7 @@ import {
   EmailEditor,
   EmailEditorProvider,
   IEmailTemplate,
+  transformArcoCSS,
 } from 'easy-email-editor';
 
 import { Stack } from '@demo/components/Stack';
@@ -44,10 +45,14 @@ import enUS from '@arco-design/web-react/es/locale/en-US';
 
 import { useShowCommercialEditor } from '@demo/hooks/useShowCommercialEditor';
 import { useWindowSize } from 'react-use';
-import { MarketingCampaignsPanel, ProductShowcasePanel } from '@demo/components/CustomBlocks/DraggableCustomBlock';
+import {
+  MarketingCampaignsPanel,
+  ProductShowcasePanel,
+} from '@demo/components/CustomBlocks/DraggableCustomBlock';
 import { CustomBlocksType } from '@demo/components/CustomBlocks/constants';
 // Import custom blocks to register them in BlockManager
 import '@demo/components/CustomBlocks';
+import { VariablesPanel } from '@demo/components/VariablesPanel';
 
 const defaultCategories: ExtensionProps['categories'] = [
   {
@@ -130,12 +135,18 @@ export default function Editor() {
   const customCategories: ExtensionProps['categories'] = [
     ...defaultCategories,
     {
+      label: 'Variables',
+      active: true,
+      displayType: 'custom',
+      blocks: [<VariablesPanel key='variables-panel' />],
+    },
+    {
       label: 'Marketing Campaigns',
       active: true,
       displayType: 'custom',
       blocks: [
         <MarketingCampaignsPanel
-          key="marketing-campaigns-panel"
+          key='marketing-campaigns-panel'
           searchQuery={campaignSearchQuery}
           onSearchChange={setCampaignSearchQuery}
         />,
@@ -147,7 +158,7 @@ export default function Editor() {
       displayType: 'custom',
       blocks: [
         <ProductShowcasePanel
-          key="product-showcase-panel"
+          key='product-showcase-panel'
           searchQuery={productSearchQuery}
           onSearchChange={setProductSearchQuery}
         />,
@@ -261,9 +272,12 @@ export default function Editor() {
   if (!initialValues) return null;
 
   return (
-    <ConfigProvider locale={enUS}>
+    <ConfigProvider
+      locale={enUS}
+      prefixCls='ee'
+    >
       <div>
-        <style>{blueTheme}</style>
+        <style>{transformArcoCSS(blueTheme)}</style>
         <EmailEditorProvider
           height={featureEnabled ? 'calc(100vh - 108px)' : 'calc(100vh - 68px)'}
           data={initialValues}

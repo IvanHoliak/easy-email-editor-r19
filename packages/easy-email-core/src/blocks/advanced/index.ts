@@ -23,6 +23,7 @@ import {
   AdvancedColumn,
   AdvancedHero,
   AdvancedTable,
+  AdvancedCode,
 } from './blocks';
 import { IAdvancedTableData, AdvancedTableBlock } from './generateAdvancedTableBlock';
 
@@ -37,6 +38,7 @@ export const advancedBlocks = {
   [AdvancedType.CAROUSEL]: AdvancedCarousel,
   [AdvancedType.SOCIAL]: AdvancedSocial,
   [AdvancedType.TABLE]: AdvancedTable,
+  [AdvancedType.CODE]: AdvancedCode,
 
   [AdvancedType.WRAPPER]: AdvancedWrapper,
   [AdvancedType.SECTION]: AdvancedSection,

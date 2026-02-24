@@ -19,6 +19,7 @@ import { Hero } from './Hero';
 import { Navbar } from './Navbar';
 import { Social } from './Social';
 import { Table } from './Table';
+import { Code } from './Code';
 import { BasicType, AdvancedType } from '@ivanholiak/easy-email-core';
 import { AdvancedTable } from './AdvancedTable';
 
@@ -43,6 +44,7 @@ export const blocks = {
   [BasicType.NAVBAR]: Navbar,
   [BasicType.SOCIAL]: Social,
   [BasicType.TABLE]: Table,
+  [BasicType.CODE]: Code,
 
   [AdvancedType.TEXT]: Text,
   [AdvancedType.IMAGE]: Image,
@@ -54,6 +56,7 @@ export const blocks = {
   [AdvancedType.NAVBAR]: Navbar,
   [AdvancedType.SOCIAL]: Social,
   [AdvancedType.TABLE]: AdvancedTable,
+  [AdvancedType.CODE]: Code,
 
   [AdvancedType.HERO]: Hero,
   [AdvancedType.WRAPPER]: Wrapper,

@@ -14,6 +14,7 @@ import {
   IColumn,
   IHero,
   ITable,
+  ICode,
 } from '../../standard';
 import { AdvancedType, BasicType } from '@core/constants';
 import { generateAdvancedContentBlock } from '../generateAdvancedContentBlock';
@@ -68,6 +69,11 @@ export const AdvancedSocial = generateAdvancedContentBlock<ISocial>({
 export const AdvancedTable = generateAdvancedTableBlock({
   type: AdvancedType.TABLE,
   baseType: BasicType.TABLE,
+});
+
+export const AdvancedCode = generateAdvancedContentBlock<ICode>({
+  type: AdvancedType.CODE,
+  baseType: BasicType.CODE,
 });
 
 //

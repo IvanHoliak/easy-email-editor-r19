@@ -1,5 +1,5 @@
 import { IBlockData } from '@ivanholiak/easy-email-core';
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 
 export interface CollectedBlock {
   label: string;
@@ -92,7 +92,7 @@ export const EditorPropsContext = React.createContext<
 });
 
 export const PropsProvider: React.FC<PropsProviderProps> = props => {
-  const { dashed = true, mergeTagGenerate = defaultMergeTagGenerate, pageTitle } = props;
+  const { dashed = true, mergeTagGenerate = defaultMergeTagGenerate } = props;
   const formatProps = useMemo(() => {
     return {
       ...props,
@@ -100,17 +100,6 @@ export const PropsProvider: React.FC<PropsProviderProps> = props => {
       dashed,
     };
   }, [mergeTagGenerate, props, dashed]);
-
-  // Set page title if provided
-  useEffect(() => {
-    if (pageTitle) {
-      const originalTitle = document.title;
-      document.title = pageTitle;
-      return () => {
-        document.title = originalTitle;
-      };
-    }
-  }, [pageTitle]);
 
   return (
     <EditorPropsContext.Provider value={formatProps}>

@@ -23,6 +23,7 @@ export enum BasicType {
   SOCIAL = 'social',
   // TODO
   TABLE = 'table',
+  CODE = 'code',
 
   TEMPLATE = 'template',
 }
@@ -39,6 +40,7 @@ export enum AdvancedType {
   ACCORDION = 'advanced_accordion',
   CAROUSEL = 'advanced_carousel',
   TABLE = 'advanced_table',
+  CODE = 'advanced_code',
 
   WRAPPER = 'advanced_wrapper',
   SECTION = 'advanced_section',

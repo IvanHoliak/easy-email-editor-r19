@@ -1,12 +1,12 @@
 .SimpleLayout {
   :global {
-    .arco-layout-sider-children {
+    .ee-layout-sider-children {
       overflow-x: hidden;
-      .arco-tabs-content {
+      .ee-tabs-content {
         padding: 0;
       }
     }
-    .arco-collapse-item-content-expanded {
+    .ee-collapse-item-content-expanded {
       overflow: visible;
     }
   }
@@ -24,7 +24,7 @@
 
 .rightSide {
   :global {
-    .arco-tabs-header {
+    .ee-tabs-header {
     }
   }
 }
@@ -43,7 +43,7 @@
   }
 
   :global {
-    .arco-tabs-content {
+    .ee-tabs-content {
       padding: 0;
     }
   }

@@ -20,6 +20,7 @@ import { AccordionElement, IAccordionElement } from './AccordionElement';
 import { AccordionTitle, IAccordionTitle } from './AccordionTitle';
 import { AccordionText, IAccordionText } from './AccordionText';
 import { Table, ITable } from './Table';
+import { Code, ICode } from './Code';
 import { BasicType } from '@core/constants';
 
 export const standardBlocks = {
@@ -50,6 +51,7 @@ export const standardBlocks = {
   [BasicType.ACCORDION_TEXT]: AccordionText,
 
   [BasicType.TABLE]: Table,
+  [BasicType.CODE]: Code,
 };
 
 export type {
@@ -74,4 +76,5 @@ export type {
   IAccordionTitle,
   IAccordionText,
   ITemplate,
+  ICode,
 };

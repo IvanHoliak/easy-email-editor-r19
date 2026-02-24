@@ -56,8 +56,7 @@ export const Page = createBlock<IPage>({
           headStyles: [],
           fonts: [],
           responsive: true,
-          'font-family':
-            '-apple-system, BlinkMacSystemFont, \'Segoe UI\', \'Roboto\', \'Oxygen\', \'Ubuntu\', \'Cantarell\', \'Fira Sans\', \'Droid Sans\',\'Helvetica Neue\', sans-serif',
+          'font-family': '',
           'text-color': '#000000',
         },
       },
