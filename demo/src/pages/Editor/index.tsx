@@ -53,6 +53,7 @@ import { CustomBlocksType } from '@demo/components/CustomBlocks/constants';
 // Import custom blocks to register them in BlockManager
 import '@demo/components/CustomBlocks';
 import { VariablesPanel } from '@demo/components/VariablesPanel';
+import { OpportunitiesPanel } from '@demo/components/OpportunitiesPanel';
 
 const defaultCategories: ExtensionProps['categories'] = [
   {
@@ -139,6 +140,12 @@ export default function Editor() {
       active: true,
       displayType: 'custom',
       blocks: [<VariablesPanel key='variables-panel' />],
+    },
+    {
+      label: 'Opportunities',
+      active: true,
+      displayType: 'custom',
+      blocks: [<OpportunitiesPanel key='opportunities-panel' />],
     },
     {
       label: 'Marketing Campaigns',

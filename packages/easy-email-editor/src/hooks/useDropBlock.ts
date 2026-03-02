@@ -9,14 +9,21 @@ import { useDataTransfer } from './useDataTransfer';
 import { useHoverIdx } from './useHoverIdx';
 import { getInsertPosition } from '@/utils/getInsertPosition';
 import { useEditorProps } from './useEditorProps';
-import { DATA_ATTRIBUTE_DROP_CONTAINER } from '@/constants';
+import { ContentEditableType, DATA_ATTRIBUTE_DROP_CONTAINER } from '@/constants';
 import { getShadowRoot } from '@/utils/getShadowRoot';
 
 const MERGE_TAG_MIME = 'text/merge-tag';
+const LINK_MIME = 'text/link';
 
 function isMergeTagDrag(ev: DragEvent): boolean {
   return ev.dataTransfer?.types
     ? Array.from(ev.dataTransfer.types).includes(MERGE_TAG_MIME)
+    : false;
+}
+
+function isLinkDrag(ev: DragEvent): boolean {
+  return ev.dataTransfer?.types
+    ? Array.from(ev.dataTransfer.types).includes(LINK_MIME)
     : false;
 }
 
@@ -82,6 +89,80 @@ function insertMergeTagAtPoint(x: number, y: number, text: string): void {
     // Simpler: set cursor at the end of the editable's content.
     newRange.selectNodeContents(editableEl);
     newRange.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(newRange);
+  }
+
+  // Trigger input event so InlineTextField picks up the change
+  editableEl.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+/**
+ * Insert a styled <a> link into a contenteditable element at the drop coordinates.
+ * Only targets RichText contenteditables (data-content_editable-type="RichText").
+ */
+function insertLinkAtPoint(
+  x: number,
+  y: number,
+  linkData: { text: string; url: string; color: string; underline: boolean; target: string },
+): void {
+  const shadowRoot = getShadowRoot();
+  if (!shadowRoot) return;
+
+  // Try to get a caret range at the drop coordinates
+  let range: Range | null = null;
+  if (document.caretRangeFromPoint) {
+    range = document.caretRangeFromPoint(x, y);
+    if (range && !shadowRoot.contains(range.startContainer)) {
+      range = null;
+    }
+  }
+
+  // Find the contenteditable element
+  let editableEl: Element | null = null;
+  if (range) {
+    const node = range.startContainer;
+    editableEl = node instanceof Element
+      ? node.closest('[contenteditable]')
+      : node.parentElement?.closest('[contenteditable]') || null;
+  }
+
+  // Fallback: use elementFromPoint on the shadow root
+  if (!editableEl) {
+    const target = shadowRoot.elementFromPoint(x, y);
+    if (target) {
+      editableEl = target.closest('[contenteditable]')
+        || (target.getAttribute('contenteditable') ? target : null);
+    }
+    if (editableEl) {
+      range = document.createRange();
+      range.selectNodeContents(editableEl);
+      range.collapse(false);
+    }
+  }
+
+  if (!editableEl || !range) return;
+
+  // Guard: only insert into RichText contenteditables
+  const editableType = editableEl.getAttribute('data-content_editable-type');
+  if (editableType && editableType !== ContentEditableType.RichText) return;
+
+  // Create <a> element with styling
+  const anchor = document.createElement('a');
+  anchor.href = linkData.url;
+  anchor.textContent = linkData.text;
+  anchor.style.color = linkData.color;
+  anchor.style.textDecoration = linkData.underline ? 'underline' : 'none';
+  anchor.target = linkData.target;
+
+  range.insertNode(anchor);
+
+  // Move cursor after the inserted link
+  const sel = (shadowRoot as any).getSelection?.() || window.getSelection();
+  if (sel) {
+    const newRange = document.createRange();
+    newRange.setStartAfter(anchor);
+    newRange.collapse(true);
     sel.removeAllRanges();
     sel.addRange(newRange);
   }
@@ -174,12 +255,36 @@ export function useDropBlock() {
           }
           return;
         }
+
+        // Handle link drop: insert <a> tag into contenteditable
+        if (isLinkDrag(ev)) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          const raw = ev.dataTransfer?.getData(LINK_MIME) || '';
+          if (raw) {
+            try {
+              const linkData = JSON.parse(raw);
+              insertLinkAtPoint(ev.clientX, ev.clientY, linkData);
+            } catch {
+              // Invalid JSON, ignore
+            }
+          }
+          return;
+        }
+
         lastDragover.target = null;
       };
 
       const onDragOver = (ev: DragEvent) => {
         // Allow merge tag drops on contenteditable elements inside the shadow DOM
         if (isMergeTagDrag(ev)) {
+          ev.preventDefault();
+          if (ev.dataTransfer) ev.dataTransfer.dropEffect = 'copy';
+          return;
+        }
+
+        // Allow link drops on contenteditable elements inside the shadow DOM
+        if (isLinkDrag(ev)) {
           ev.preventDefault();
           if (ev.dataTransfer) ev.dataTransfer.dropEffect = 'copy';
           return;

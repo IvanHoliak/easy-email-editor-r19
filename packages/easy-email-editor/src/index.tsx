@@ -1,7 +1,7 @@
 // export components
 export * from './components/Provider/EmailEditorProvider';
 
-export { BlockAvatarWrapper, MergeTagDraggable } from './components/wrapper';
+export { BlockAvatarWrapper, MergeTagDraggable, LinkDraggable } from './components/wrapper';
 
 export { EmailEditor } from './components/EmailEditor';
 export { EasyEmailScope } from './components/EasyEmailScope';
@@ -40,7 +40,7 @@ export * from './typings';
 export type { StackProps } from './components/UI/Stack';
 export type { PropsProviderProps } from './components/Provider/PropsProvider';
 export { AvailableTools } from './components/Provider/PropsProvider';
-export type { BlockAvatarWrapperProps, MergeTagDraggableProps } from './components/wrapper';
+export type { BlockAvatarWrapperProps, MergeTagDraggableProps, LinkDraggableProps } from './components/wrapper';
 export type { BlockGroup, CollectedBlock } from './components/Provider/PropsProvider';
 
 export * from './constants';
