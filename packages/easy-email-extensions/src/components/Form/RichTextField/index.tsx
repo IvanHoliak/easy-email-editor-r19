@@ -10,7 +10,7 @@ import {
   DATA_CONTENT_EDITABLE_TYPE,
   ContentEditableType,
 } from '@ivanholiak/easy-email-editor';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InlineText, InlineTextProps } from '../InlineTextField';
 import { RichTextToolBar } from '../RichTextToolBar';
 import { Field, FieldInputProps } from 'react-final-form';
@@ -99,20 +99,34 @@ function FieldWrapper(
 ) {
   const { input, contentEditableType, ...rest } = props;
   const { mergeTagGenerate, enabledMergeTagsBadge } = useEditorProps();
+  const inputRef = useRef(input);
+  inputRef.current = input;
+
+  const enabledMergeTagsBadgeRef = useRef(enabledMergeTagsBadge);
+  enabledMergeTagsBadgeRef.current = enabledMergeTagsBadge;
+
+  const mergeTagGenerateRef = useRef(mergeTagGenerate);
+  mergeTagGenerateRef.current = mergeTagGenerate;
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debounceCallbackChange = useCallback(
     debounce((val) => {
-      if (enabledMergeTagsBadge) {
-        input.onChange(MergeTagBadge.revert(val, mergeTagGenerate));
+      if (enabledMergeTagsBadgeRef.current) {
+        inputRef.current.onChange(MergeTagBadge.revert(val, mergeTagGenerateRef.current));
       } else {
-        input.onChange(val);
+        inputRef.current.onChange(val);
       }
 
-      input.onBlur();
+      inputRef.current.onBlur();
     }, 200),
-    [input]
+    []
   );
+
+  useEffect(() => {
+    return () => {
+      debounceCallbackChange.flush();
+    };
+  }, [debounceCallbackChange]);
 
   return (
     <>
