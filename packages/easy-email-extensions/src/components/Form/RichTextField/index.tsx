@@ -123,8 +123,22 @@ function FieldWrapper(
   );
 
   useEffect(() => {
+    const root = getShadowRoot();
+    if (!root) return;
+
+    const onFocusOut = (e: Event) => {
+      if (
+        e.target instanceof Element &&
+        e.target.getAttribute('contenteditable') === 'true'
+      ) {
+        debounceCallbackChange.flush();
+      }
+    };
+
+    root.addEventListener('focusout', onFocusOut);
     return () => {
-      debounceCallbackChange.flush();
+      root.removeEventListener('focusout', onFocusOut);
+      debounceCallbackChange.cancel();
     };
   }, [debounceCallbackChange]);
 

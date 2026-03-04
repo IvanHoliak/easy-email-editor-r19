@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useRef } from 'react';
+import { useForm } from 'react-final-form';
 
 import { getNodeIdxFromClassName } from '@ivanholiak/easy-email-core';
 import { getBlockNodeByChildEle } from '@/utils/getBlockNodeByChildEle';
@@ -9,8 +10,9 @@ import { useDataTransfer } from './useDataTransfer';
 import { useHoverIdx } from './useHoverIdx';
 import { getInsertPosition } from '@/utils/getInsertPosition';
 import { useEditorProps } from './useEditorProps';
-import { ContentEditableType, DATA_ATTRIBUTE_DROP_CONTAINER } from '@/constants';
+import { ContentEditableType, DATA_ATTRIBUTE_DROP_CONTAINER, DATA_CONTENT_EDITABLE_IDX } from '@/constants';
 import { getShadowRoot } from '@/utils/getShadowRoot';
+import { MergeTagBadge } from '@/utils/MergeTagBadge';
 
 const MERGE_TAG_MIME = 'text/merge-tag';
 const LINK_MIME = 'text/link';
@@ -30,10 +32,11 @@ function isLinkDrag(ev: DragEvent): boolean {
 /**
  * Insert merge-tag text into a contenteditable element at the drop coordinates.
  * Tries caretRangeFromPoint first; falls back to appending at the end.
+ * Returns the contenteditable element if insertion succeeded, or null.
  */
-function insertMergeTagAtPoint(x: number, y: number, text: string): void {
+function insertMergeTagAtPoint(x: number, y: number, text: string): Element | null {
   const shadowRoot = getShadowRoot();
-  if (!shadowRoot) return;
+  if (!shadowRoot) return null;
 
   // Try to get a caret range at the drop coordinates
   let range: Range | null = null;
@@ -69,7 +72,7 @@ function insertMergeTagAtPoint(x: number, y: number, text: string): void {
     }
   }
 
-  if (!editableEl || !range) return;
+  if (!editableEl || !range) return null;
 
   // Insert a text node at the caret position
   const textNode = document.createTextNode(text);
@@ -95,19 +98,22 @@ function insertMergeTagAtPoint(x: number, y: number, text: string): void {
 
   // Trigger input event so InlineTextField picks up the change
   editableEl.dispatchEvent(new Event('input', { bubbles: true }));
+
+  return editableEl;
 }
 
 /**
  * Insert a styled <a> link into a contenteditable element at the drop coordinates.
  * Only targets RichText contenteditables (data-content_editable-type="RichText").
+ * Returns the contenteditable element if insertion succeeded, or null.
  */
 function insertLinkAtPoint(
   x: number,
   y: number,
   linkData: { text: string; url: string; color: string; underline: boolean; target: string },
-): void {
+): Element | null {
   const shadowRoot = getShadowRoot();
-  if (!shadowRoot) return;
+  if (!shadowRoot) return null;
 
   // Try to get a caret range at the drop coordinates
   let range: Range | null = null;
@@ -141,11 +147,11 @@ function insertLinkAtPoint(
     }
   }
 
-  if (!editableEl || !range) return;
+  if (!editableEl || !range) return null;
 
   // Guard: only insert into RichText contenteditables
   const editableType = editableEl.getAttribute('data-content_editable-type');
-  if (editableType && editableType !== ContentEditableType.RichText) return;
+  if (editableType && editableType !== ContentEditableType.RichText) return null;
 
   // Create <a> element with styling
   const anchor = document.createElement('a');
@@ -169,15 +175,41 @@ function insertLinkAtPoint(
 
   // Trigger input event so InlineTextField picks up the change
   editableEl.dispatchEvent(new Event('input', { bubbles: true }));
+
+  return editableEl;
+}
+
+/**
+ * Persist the contenteditable's innerHTML directly into the react-final-form store.
+ * This ensures the content is saved even if InlineTextField is not mounted.
+ */
+function saveEditableToForm(
+  editableEl: Element,
+  formChange: (name: string, value: any) => void,
+  enabledMergeTagsBadge: boolean | undefined,
+  mergeTagGenerate: ((s: string) => string) | undefined,
+) {
+  const idx = editableEl.getAttribute(DATA_CONTENT_EDITABLE_IDX);
+  if (!idx) return;
+
+  let html = editableEl.innerHTML || '';
+  if (enabledMergeTagsBadge && mergeTagGenerate) {
+    html = MergeTagBadge.revert(html, mergeTagGenerate);
+  }
+  formChange(idx, html);
 }
 
 export function useDropBlock() {
   const [ref, setRef] = useState<HTMLElement | null>(null);
   const { values } = useBlock();
-  const { autoComplete } = useEditorProps();
+  const { autoComplete, enabledMergeTagsBadge, mergeTagGenerate } = useEditorProps();
+  const { change: formChange } = useForm();
   const { dataTransfer, setDataTransfer } = useDataTransfer();
   const cacheValues = useRef(values);
   const cacheDataTransfer = useRef(dataTransfer);
+  const cacheFormChange = useRef(formChange);
+  const cacheEnabledMergeTagsBadge = useRef(enabledMergeTagsBadge);
+  const cacheMergeTagGenerate = useRef(mergeTagGenerate);
 
   useEffect(() => {
     cacheValues.current = values;
@@ -186,6 +218,18 @@ export function useDropBlock() {
   useEffect(() => {
     cacheDataTransfer.current = dataTransfer;
   }, [dataTransfer]);
+
+  useEffect(() => {
+    cacheFormChange.current = formChange;
+  }, [formChange]);
+
+  useEffect(() => {
+    cacheEnabledMergeTagsBadge.current = enabledMergeTagsBadge;
+  }, [enabledMergeTagsBadge]);
+
+  useEffect(() => {
+    cacheMergeTagGenerate.current = mergeTagGenerate;
+  }, [mergeTagGenerate]);
   const { setFocusIdx, focusIdx } = useFocusIdx();
   const { setHoverIdx, setDirection, isDragging, hoverIdx, direction } =
     useHoverIdx();
@@ -251,7 +295,15 @@ export function useDropBlock() {
             ev.dataTransfer?.getData('text/plain') ||
             '';
           if (mergeTagText) {
-            insertMergeTagAtPoint(ev.clientX, ev.clientY, mergeTagText);
+            const editableEl = insertMergeTagAtPoint(ev.clientX, ev.clientY, mergeTagText);
+            if (editableEl) {
+              saveEditableToForm(
+                editableEl,
+                cacheFormChange.current,
+                cacheEnabledMergeTagsBadge.current,
+                cacheMergeTagGenerate.current,
+              );
+            }
           }
           return;
         }
@@ -264,7 +316,15 @@ export function useDropBlock() {
           if (raw) {
             try {
               const linkData = JSON.parse(raw);
-              insertLinkAtPoint(ev.clientX, ev.clientY, linkData);
+              const editableEl = insertLinkAtPoint(ev.clientX, ev.clientY, linkData);
+              if (editableEl) {
+                saveEditableToForm(
+                  editableEl,
+                  cacheFormChange.current,
+                  cacheEnabledMergeTagsBadge.current,
+                  cacheMergeTagGenerate.current,
+                );
+              }
             } catch {
               // Invalid JSON, ignore
             }
