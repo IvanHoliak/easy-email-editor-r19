@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { useForm } from 'react-final-form';
 
-import { getNodeIdxFromClassName } from '@ivanholiak/easy-email-core';
+import { getNodeIdxFromClassName, AdvancedType } from '@ivanholiak/easy-email-core';
 import { getBlockNodeByChildEle } from '@/utils/getBlockNodeByChildEle';
 import { useBlock } from '@/hooks/useBlock';
 import { getDirectionPosition } from '@/utils/getDirectionPosition';
@@ -201,7 +201,7 @@ function saveEditableToForm(
 
 export function useDropBlock() {
   const [ref, setRef] = useState<HTMLElement | null>(null);
-  const { values } = useBlock();
+  const { values, addBlock } = useBlock();
   const { autoComplete, enabledMergeTagsBadge, mergeTagGenerate } = useEditorProps();
   const { change: formChange } = useForm();
   const { dataTransfer, setDataTransfer } = useDataTransfer();
@@ -210,6 +210,7 @@ export function useDropBlock() {
   const cacheFormChange = useRef(formChange);
   const cacheEnabledMergeTagsBadge = useRef(enabledMergeTagsBadge);
   const cacheMergeTagGenerate = useRef(mergeTagGenerate);
+  const cacheAddBlock = useRef(addBlock);
 
   useEffect(() => {
     cacheValues.current = values;
@@ -230,6 +231,14 @@ export function useDropBlock() {
   useEffect(() => {
     cacheMergeTagGenerate.current = mergeTagGenerate;
   }, [mergeTagGenerate]);
+
+  useEffect(() => {
+    cacheAddBlock.current = addBlock;
+  }, [addBlock]);
+  // Stores calculated block insertion position for drops outside of text blocks
+  const linkBlockPosition = useRef<{ parentIdx: string; positionIndex: number } | null>(null);
+  const mergeTagBlockPosition = useRef<{ parentIdx: string; positionIndex: number } | null>(null);
+
   const { setFocusIdx, focusIdx } = useFocusIdx();
   const { setHoverIdx, setDirection, isDragging, hoverIdx, direction } =
     useHoverIdx();
@@ -286,7 +295,7 @@ export function useDropBlock() {
       };
 
       const onDrop = (ev: DragEvent) => {
-        // Handle merge tag drop: insert text into contenteditable
+        // Handle merge tag drop: try inline in contenteditable first, otherwise create a block
         if (isMergeTagDrag(ev)) {
           ev.preventDefault();
           ev.stopPropagation();
@@ -303,12 +312,25 @@ export function useDropBlock() {
                 cacheEnabledMergeTagsBadge.current,
                 cacheMergeTagGenerate.current,
               );
+            } else if (mergeTagBlockPosition.current) {
+              // Fallback: create an independent Text block with the merge tag
+              cacheAddBlock.current({
+                type: AdvancedType.TEXT,
+                parentIdx: mergeTagBlockPosition.current.parentIdx,
+                positionIndex: mergeTagBlockPosition.current.positionIndex,
+                payload: {
+                  data: { value: { content: mergeTagText } },
+                },
+              });
             }
           }
+          mergeTagBlockPosition.current = null;
+          setDirection('');
+          setHoverIdx('');
           return;
         }
 
-        // Handle link drop: insert <a> tag into contenteditable
+        // Handle link drop: try inline <a> in contenteditable first, otherwise create a block
         if (isLinkDrag(ev)) {
           ev.preventDefault();
           ev.stopPropagation();
@@ -316,6 +338,7 @@ export function useDropBlock() {
           if (raw) {
             try {
               const linkData = JSON.parse(raw);
+              // Try inserting inline into a text/RichText contenteditable
               const editableEl = insertLinkAtPoint(ev.clientX, ev.clientY, linkData);
               if (editableEl) {
                 saveEditableToForm(
@@ -324,11 +347,27 @@ export function useDropBlock() {
                   cacheEnabledMergeTagsBadge.current,
                   cacheMergeTagGenerate.current,
                 );
+              } else if (linkBlockPosition.current) {
+                // Fallback: create an independent Text block with the link
+                const { color, underline, target, text, url } = linkData;
+                const textDecoration = underline ? 'text-decoration: underline;' : 'text-decoration: none;';
+                const linkHtml = `<a href="${url}" target="${target || '_blank'}" style="color: ${color || '#0068A5'}; ${textDecoration}">${text}</a>`;
+                cacheAddBlock.current({
+                  type: AdvancedType.TEXT,
+                  parentIdx: linkBlockPosition.current.parentIdx,
+                  positionIndex: linkBlockPosition.current.positionIndex,
+                  payload: {
+                    data: { value: { content: linkHtml } },
+                  },
+                });
               }
             } catch {
               // Invalid JSON, ignore
             }
           }
+          linkBlockPosition.current = null;
+          setDirection('');
+          setHoverIdx('');
           return;
         }
 
@@ -336,17 +375,112 @@ export function useDropBlock() {
       };
 
       const onDragOver = (ev: DragEvent) => {
-        // Allow merge tag drops on contenteditable elements inside the shadow DOM
+        // Allow merge tag drops: on contenteditables (inline) or as independent blocks
         if (isMergeTagDrag(ev)) {
           ev.preventDefault();
           if (ev.dataTransfer) ev.dataTransfer.dropEffect = 'copy';
+
+          // Check if hovering over a contenteditable (inline mode)
+          const shadowRoot = getShadowRoot();
+          let overContentEditable = false;
+          if (shadowRoot) {
+            const target = shadowRoot.elementFromPoint(ev.clientX, ev.clientY);
+            if (target) {
+              const editable = target.closest?.('[contenteditable]')
+                || (target.getAttribute?.('contenteditable') ? target : null);
+              if (editable) {
+                overContentEditable = true;
+              }
+            }
+          }
+
+          if (!overContentEditable) {
+            // Calculate block insertion position (same logic as normal block drag)
+            const blockNode = getBlockNodeByChildEle(ev.target as HTMLDivElement);
+            if (blockNode) {
+              const directionPosition = getDirectionPosition(ev);
+              const idx = getNodeIdxFromClassName(blockNode.classList)!;
+              const positionData = getInsertPosition({
+                context: cacheValues.current,
+                idx,
+                directionPosition,
+                dragType: AdvancedType.TEXT,
+              });
+              if (positionData) {
+                mergeTagBlockPosition.current = {
+                  parentIdx: positionData.parentIdx,
+                  positionIndex: positionData.insertIndex,
+                };
+                setDirection(positionData.endDirection);
+                setHoverIdx(positionData.hoverIdx);
+              } else {
+                mergeTagBlockPosition.current = null;
+                setDirection('');
+                setHoverIdx('');
+              }
+            }
+          } else {
+            // Over contenteditable — clear block position, will use inline insertion
+            mergeTagBlockPosition.current = null;
+            setDirection('');
+            setHoverIdx('');
+          }
           return;
         }
 
-        // Allow link drops on contenteditable elements inside the shadow DOM
+        // Allow link drops: on contenteditables (inline) or as independent blocks
         if (isLinkDrag(ev)) {
           ev.preventDefault();
           if (ev.dataTransfer) ev.dataTransfer.dropEffect = 'copy';
+
+          // Check if hovering over a contenteditable (inline mode)
+          const shadowRoot = getShadowRoot();
+          let overContentEditable = false;
+          if (shadowRoot) {
+            const target = shadowRoot.elementFromPoint(ev.clientX, ev.clientY);
+            if (target) {
+              const editable = target.closest?.('[contenteditable]')
+                || (target.getAttribute?.('contenteditable') ? target : null);
+              if (editable) {
+                const editableType = editable.getAttribute('data-content_editable-type');
+                if (!editableType || editableType === ContentEditableType.RichText) {
+                  overContentEditable = true;
+                }
+              }
+            }
+          }
+
+          if (!overContentEditable) {
+            // Calculate block insertion position (same logic as normal block drag)
+            const blockNode = getBlockNodeByChildEle(ev.target as HTMLDivElement);
+            if (blockNode) {
+              const directionPosition = getDirectionPosition(ev);
+              const idx = getNodeIdxFromClassName(blockNode.classList)!;
+              const positionData = getInsertPosition({
+                context: cacheValues.current,
+                idx,
+                directionPosition,
+                dragType: AdvancedType.TEXT,
+              });
+              if (positionData) {
+                linkBlockPosition.current = {
+                  parentIdx: positionData.parentIdx,
+                  positionIndex: positionData.insertIndex,
+                };
+                setDirection(positionData.endDirection);
+                setHoverIdx(positionData.hoverIdx);
+              } else {
+                linkBlockPosition.current = null;
+                setDirection('');
+                setHoverIdx('');
+              }
+            }
+          } else {
+            // Over contenteditable — clear block position, will use inline insertion
+            linkBlockPosition.current = null;
+            setDirection('');
+            setHoverIdx('');
+          }
           return;
         }
 
